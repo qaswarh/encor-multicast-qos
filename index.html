@@ -1,327 +1,400 @@
 <!doctype html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ENCOR v1.2 — Multicast, QoS &amp; EtherChannel Simulator</title>
+    <script>
+      if (window.self === window.top) {
+        window.location.replace("https://qaswarh.github.io/4any1");
+      }
+    </script>
+    <link rel="stylesheet" href="style.css" />
+  </head>
 
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ENCOR v1.2 — Multicast, QoS &amp; EtherChannel Simulator</title>
-  <script>
-    if (window.self === window.top) {
-      window.location.replace("https://qaswarh.github.io/4any1");
-    }
-  </script>
-  <link rel="stylesheet" href="style.css" />
-</head>
-
-<body>
-  <div class="page-layout">
-    <!-- Left Column: Searchable Multicast, QoS & Layer 2 Knowledge Base -->
-    <aside class="glossary-panel">
-      <div class="glossary-search-wrap">
-        <input type="text" id="glossarySearch" class="glossary-search"
-          placeholder="Filter terms (e.g., PIM, RPF, DSCP, EF, LACP, PAgP, NTP)..." />
-      </div>
-      <div id="glossaryNoResults" class="no-results hidden">
-        No matching terms found.
-      </div>
-
-      <div id="glossaryMq">
-        <h2>Multicast, QoS &amp; L2 Knowledge Base</h2>
-        <p class="glossary-intro">ENCOR 350-401 v1.2 Domain 3 (Infrastructure) &amp; Domain 1 (Architecture) reference
-          with full acronym expansions and operational definitions.</p>
-
-        <div class="glossary-cat">IPv4 Multicast (IGMP &amp; PIM)</div>
-        <div class="term-card">
-          <h3>PIM Sparse Mode vs. Dense Mode (Pull vs. Push)</h3>
-          <p><strong>PIM (Protocol Independent Multicast):</strong> Uses the existing unicast routing table (OSPF,
-            EIGRP, BGP, static) for loop prevention without running its own routing protocol. <strong>PIM Sparse Mode
-              (PIM-SM):</strong> Uses a <em>pull model</em>—routers only forward multicast traffic down interfaces that
-            explicitly request it via PIM Join messages toward a Rendezvous Point (RP), keeping links clean until
-            receivers join. <strong>PIM Dense Mode (PIM-DM):</strong> Uses a legacy <em>push (flood-and-prune)
-              model</em>—floods traffic everywhere every 3 minutes and prunes branches with no receivers (inefficient
-            for enterprise WANs).</p>
+  <body>
+    <div class="page-layout">
+      <!-- Left Column: Searchable Multicast, QoS & Layer 2 Knowledge Base -->
+      <aside class="glossary-panel">
+        <div class="glossary-search-wrap">
+          <input
+            type="text"
+            id="glossarySearch"
+            class="glossary-search"
+            placeholder="Filter terms (e.g., PIM, RPF, DSCP, EF, LACP, PAgP, NTP)..."
+          />
         </div>
-        <div class="term-card">
-          <h3>Rendezvous Point (RP) &amp; RP Discovery (Static, Auto-RP, BSR, Anycast)</h3>
-          <p><strong>RP (Rendezvous Point):</strong> A central meeting-point router in PIM Sparse Mode where multicast
-            sources register (via unicast PIM Register from the First-Hop Router) and receivers join (via
-            <code>(*,G)</code> PIM Joins from the Last-Hop Router) before switching to a direct Shortest-Path Tree
-            <code>(S,G)</code>. <strong>Static RP:</strong> Manually configured on every router
-            (<code>ip pim rp-address</code>). <strong>Auto-RP:</strong> Cisco-proprietary dynamic RP election using
-            <code>224.0.1.39</code> (Candidate-RP) and <code>224.0.1.40</code> (Mapping Agent). <strong>BSR (Bootstrap
-              Router):</strong> Open-standard (RFC 5059) dynamic RP election carried inside hop-by-hop PIM messages
-            (<code>224.0.0.13</code>). <strong>Anycast RP + MSDP:</strong> Multiple routers share the same loopback IP
-            as RP for load sharing and fast failover, syncing active sources via <strong>MSDP (Multicast Source
-              Discovery Protocol)</strong>.</p>
+        <div id="glossaryNoResults" class="no-results hidden">
+          No matching terms found.
         </div>
-        <div class="term-card">
-          <h3>IGMPv2 vs. IGMPv3 &amp; Source-Specific Multicast (SSM)</h3>
-          <p><strong>IGMP (Internet Group Management Protocol):</strong> Layer 3 protocol used by hosts to join
-            multicast groups on their local subnet. <strong>IGMPv2:</strong> Supports group-specific Leave messages
-            (<code>224.0.0.2</code>) to stop traffic quickly instead of waiting for timeout. <strong>IGMPv3:</strong>
-            Adds source filtering (<code>INCLUDE</code>/<code>EXCLUDE</code> lists) to <code>224.0.0.22</code>, enabling
-            <strong>SSM (Source-Specific Multicast — <code>232.0.0.0/8</code>)</strong> where receivers join
-            <code>(S,G)</code> directly without needing an RP or shared tree.</p>
+
+        <div id="glossaryMq">
+          <h2>Multicast, QoS &amp; L2 Knowledge Base</h2>
+          <p class="glossary-intro">
+            ENCOR 350-401 v1.2 Domain 3 (Infrastructure) &amp; Domain 1
+            (Architecture) reference with full acronym expansions and
+            operational definitions.
+          </p>
+
+          <div class="glossary-cat">IPv4 Multicast (IGMP &amp; PIM)</div>
+          <div class="term-card">
+            <h3>PIM Sparse Mode vs. Dense Mode (Pull vs. Push)</h3>
+            <p>
+              <strong>PIM (Protocol Independent Multicast):</strong> Uses the
+              existing unicast routing table (OSPF, EIGRP, BGP, static) for loop
+              prevention without running its own routing protocol.
+              <strong>PIM Sparse Mode (PIM-SM):</strong> Uses a
+              <em>pull model</em>—routers only forward multicast traffic down
+              interfaces that explicitly request it via PIM Join messages toward
+              a Rendezvous Point (RP), keeping links clean until receivers join.
+              <strong>PIM Dense Mode (PIM-DM):</strong> Uses a legacy
+              <em>push (flood-and-prune) model</em>—floods traffic everywhere
+              every 3 minutes and prunes branches with no receivers (inefficient
+              for enterprise WANs).
+            </p>
+          </div>
+          <div class="term-card">
+            <h3>
+              Rendezvous Point (RP) &amp; RP Discovery (Static, Auto-RP, BSR,
+              Anycast)
+            </h3>
+            <p>
+              <strong>RP (Rendezvous Point):</strong> A central meeting-point
+              router in PIM Sparse Mode where multicast sources register (via
+              unicast PIM Register from the First-Hop Router) and receivers join
+              (via <code>(*,G)</code> PIM Joins from the Last-Hop Router) before
+              switching to a direct Shortest-Path Tree <code>(S,G)</code>.
+              <strong>Static RP:</strong> Manually configured on every router
+              (<code>ip pim rp-address</code>).
+              <strong>Auto-RP:</strong> Cisco-proprietary dynamic RP election
+              using <code>224.0.1.39</code> (Candidate-RP) and
+              <code>224.0.1.40</code> (Mapping Agent).
+              <strong>BSR (Bootstrap Router):</strong> Open-standard (RFC 5059)
+              dynamic RP election carried inside hop-by-hop PIM messages
+              (<code>224.0.0.13</code>).
+              <strong>Anycast RP + MSDP:</strong> Multiple routers share the
+              same loopback IP as RP for load sharing and fast failover, syncing
+              active sources via
+              <strong>MSDP (Multicast Source Discovery Protocol)</strong>.
+            </p>
+          </div>
+          <div class="term-card">
+            <h3>IGMPv2 vs. IGMPv3 &amp; Source-Specific Multicast (SSM)</h3>
+            <p>
+              <strong>IGMP (Internet Group Management Protocol):</strong> Layer
+              3 protocol used by hosts to join multicast groups on their local
+              subnet. <strong>IGMPv2:</strong> Supports group-specific Leave
+              messages (<code>224.0.0.2</code>) to stop traffic quickly instead
+              of waiting for timeout. <strong>IGMPv3:</strong> Adds source
+              filtering (<code>INCLUDE</code>/<code>EXCLUDE</code> lists) to
+              <code>224.0.0.22</code>, enabling
+              <strong
+                >SSM (Source-Specific Multicast —
+                <code>232.0.0.0/8</code>)</strong
+              >
+              where receivers join <code>(S,G)</code> directly without needing
+              an RP or shared tree.
+            </p>
+          </div>
+          <div class="term-card">
+            <h3>
+              RPF (Reverse Path Forwarding) &amp; L2 Multicast MAC Mapping
+            </h3>
+            <p>
+              <strong>RPF (Reverse Path Forwarding):</strong> Loop-prevention
+              check where a router verifies that an incoming multicast packet
+              arrived on the exact interface it would use to reach the unicast
+              source IP (or RP IP); if not, the packet is dropped.
+              <strong>IPv4 Multicast MAC Mapping:</strong> Maps multicast IPs
+              (<code>224.0.0.0/4</code>) to Ethernet MAC
+              <code>01:00:5e:00:00:00</code> + the low-order 23 bits of the IP;
+              dropping 5 bits creates a <strong>32-to-1 overlap</strong> (32
+              multicast IPs share one MAC).
+            </p>
+          </div>
+
+          <div class="glossary-cat">Quality of Service (QoS)</div>
+          <div class="term-card">
+            <h3>QoS Marking: DSCP, PHB, EF, AF, CS &amp; 802.1p CoS</h3>
+            <p>
+              <strong>QoS (Quality of Service):</strong> Manages bandwidth,
+              delay, jitter, and packet loss across congested links.
+              <strong>DSCP (Differentiated Services Code Point):</strong> 6-bit
+              field (0–63) inside the IPv4/IPv6 header defining
+              <strong>PHB (Per-Hop Behavior)</strong>.
+              <strong>EF (Expedited Forwarding — DSCP 46):</strong> Low-latency
+              priority behavior for VoIP audio.
+              <strong>AF (Assured Forwarding — <code>AFxy</code>):</strong> Four
+              traffic classes (<code>x</code>=1–4) with three drop-precedence
+              levels (<code>y</code>=1 low to 3 high), such as
+              <code>AF41</code> (DSCP 34) for interactive video.
+              <strong>CS (Class Selector — CS0–CS7):</strong> Multiples of 8
+              (e.g., <code>CS3</code> = 24 for call signaling) for backward
+              compatibility with legacy 3-bit IP Precedence.
+              <strong>CoS (Class of Service):</strong> 3-bit (0–7) Layer 2
+              priority field inside an <code>802.1Q</code> Ethernet trunk tag
+              (<code>CoS 5</code> maps to voice).
+            </p>
+          </div>
+          <div class="term-card">
+            <h3>Policing vs. Shaping, LLQ, CBWFQ &amp; WRED</h3>
+            <p>
+              <strong>MQC (Modular QoS CLI):</strong> Three-step Cisco
+              configuration framework: <code>class-map</code> (match traffic)
+              &rarr; <code>policy-map</code> (mark, police, shape, or queue)
+              &rarr; <code>service-policy</code> (apply to interface).
+              <strong>Policing:</strong> Strictly enforces a rate limit (CIR) by
+              immediately dropping or re-marking excess packets without
+              buffering (used at ingress/SP edges).
+              <strong>Shaping:</strong> Buffers excess packets in memory to
+              smooth outbound bursts to the contracted rate (introduces delay
+              instead of drops; used on WAN egress).
+              <strong>LLQ (Low Latency Queuing):</strong> Adds a strict priority
+              queue (with built-in policer) on top of
+              <strong>CBWFQ (Class-Based Weighted Fair Queuing)</strong> so
+              voice is served first without starving data queues.
+              <strong>WRED (Weighted Random Early Detection):</strong>
+              Proactively drops lower-priority TCP packets before queues hit
+              100% full to avoid TCP global synchronization.
+            </p>
+          </div>
+
+          <div class="glossary-cat">
+            Layer 2 EtherChannel, Trunking &amp; Time Sync
+          </div>
+          <div class="term-card">
+            <h3>EtherChannel (LACP vs. PAgP), DTP, NTP, PTP &amp; SSO</h3>
+            <p>
+              <strong>EtherChannel:</strong> Bundles 2–8 physical Ethernet links
+              into one logical Port-Channel for load-balanced bandwidth and
+              sub-second link failover.
+              <strong
+                >LACP (Link Aggregation Control Protocol — IEEE 802.3ad /
+                802.1AX):</strong
+              >
+              Open-standard negotiation using <code>active</code> (initiates)
+              and <code>passive</code> (listens) modes.
+              <strong>PAgP (Port Aggregation Protocol):</strong>
+              Cisco-proprietary negotiation using
+              <code>desirable</code> (initiates) and <code>auto</code> (listens)
+              modes. <strong>DTP (Dynamic Trunking Protocol):</strong> Cisco
+              protocol that negotiates <code>802.1Q</code> trunking (<code
+                >dynamic desirable</code
+              >
+              / <code>dynamic auto</code>). <strong>NTP vs. PTP:</strong>
+              <strong>NTP (Network Time Protocol — UDP 123)</strong> syncs
+              device clocks to millisecond accuracy;
+              <strong>PTP (Precision Time Protocol — IEEE 1588)</strong> uses
+              hardware timestamps for sub-microsecond accuracy.
+              <strong>SSO (Stateful Switchover):</strong> High-availability
+              redundancy where a standby supervisor maintains synced Layer
+              2/control-plane state for rapid failover.
+            </p>
+          </div>
         </div>
+
         <div class="term-card">
-          <h3>RPF (Reverse Path Forwarding) &amp; L2 Multicast MAC Mapping</h3>
-          <p><strong>RPF (Reverse Path Forwarding):</strong> Loop-prevention check where a router verifies that an
-            incoming multicast packet arrived on the exact interface it would use to reach the unicast source IP (or RP
-            IP); if not, the packet is dropped. <strong>IPv4 Multicast MAC Mapping:</strong> Maps multicast IPs
-            (<code>224.0.0.0/4</code>) to Ethernet MAC <code>01:00:5e:00:00:00</code> + the low-order 23 bits of the IP;
-            dropping 5 bits creates a <strong>32-to-1 overlap</strong> (32 multicast IPs share one MAC).</p>
+          <h3>IPv4 Multicast MAC Mapping (32-to-1 Overlap)</h3>
+          <p>
+            IPv4 multicast addresses (<code>224.0.0.0/4</code>) map to Ethernet
+            MAC prefix <code>01:00:5e:00:00:00</code> plus the
+            <strong>low-order 23 bits</strong> of the IPv4 address. Because 5
+            bits (28 multicast host bits &minus; 23 MAC bits) are dropped,
+            <strong
+              >32 IPv4 multicast addresses share the exact same Layer 2 MAC
+              address</strong
+            >.
+          </p>
         </div>
 
         <div class="glossary-cat">Quality of Service (QoS)</div>
         <div class="term-card">
-          <h3>QoS Marking: DSCP, PHB, EF, AF, CS &amp; 802.1p CoS</h3>
-          <p><strong>QoS (Quality of Service):</strong> Manages bandwidth, delay, jitter, and packet loss across
-            congested links. <strong>DSCP (Differentiated Services Code Point):</strong> 6-bit field (0–63) inside the
-            IPv4/IPv6 header defining <strong>PHB (Per-Hop Behavior)</strong>. <strong>EF (Expedited Forwarding — DSCP
-              46):</strong> Low-latency priority behavior for VoIP audio. <strong>AF (Assured Forwarding —
-              <code>AFxy</code>):</strong> Four traffic classes (<code>x</code>=1–4) with three drop-precedence levels
-            (<code>y</code>=1 low to 3 high), such as <code>AF41</code> (DSCP 34) for interactive video. <strong>CS
-              (Class Selector — CS0–CS7):</strong> Multiples of 8 (e.g., <code>CS3</code> = 24 for call signaling) for
-            backward compatibility with legacy 3-bit IP Precedence. <strong>CoS (Class of Service):</strong> 3-bit (0–7)
-            Layer 2 priority field inside an <code>802.1Q</code> Ethernet trunk tag (<code>CoS 5</code> maps to voice).
+          <h3>QoS Marking Acronyms (DSCP, PHB, EF, AF, CS, CoS, ToS, MQC)</h3>
+          <p>
+            <strong>QoS:</strong> Quality of Service.
+            <strong>DSCP:</strong> Differentiated Services Code Point (6-bit IP
+            header field, values 0–63). <strong>PHB:</strong> Per-Hop Behavior.
+            <strong>EF:</strong> Expedited Forwarding (DSCP <code>46</code> —
+            voice). <strong>AF:</strong> Assured Forwarding (<code>AFxy</code>
+            where <code>x</code> = class 1–4, <code>y</code> = drop precedence
+            1–3). <strong>CS:</strong> Class Selector (backward-compatible with
+            legacy 3-bit IP Precedence). <strong>CoS:</strong> Class of Service
+            (3-bit IEEE <code>802.1p</code> field inside an
+            <code>802.1Q</code> VLAN tag). <strong>ToS / MQC:</strong> Type of
+            Service / Modular QoS CLI.
           </p>
         </div>
         <div class="term-card">
-          <h3>Policing vs. Shaping, LLQ, CBWFQ &amp; WRED</h3>
-          <p><strong>MQC (Modular QoS CLI):</strong> Three-step Cisco configuration framework: <code>class-map</code>
-            (match traffic) &rarr; <code>policy-map</code> (mark, police, shape, or queue) &rarr;
-            <code>service-policy</code> (apply to interface). <strong>Policing:</strong> Strictly enforces a rate limit
-            (CIR) by immediately dropping or re-marking excess packets without buffering (used at ingress/SP edges).
-            <strong>Shaping:</strong> Buffers excess packets in memory to smooth outbound bursts to the contracted rate
-            (introduces delay instead of drops; used on WAN egress). <strong>LLQ (Low Latency Queuing):</strong> Adds a
-            strict priority queue (with built-in policer) on top of <strong>CBWFQ (Class-Based Weighted Fair
-              Queuing)</strong> so voice is served first without starving data queues. <strong>WRED (Weighted Random
-              Early Detection):</strong> Proactively drops lower-priority TCP packets before queues hit 100% full to
-            avoid TCP global synchronization.</p>
+          <h3>Policing vs. Shaping &amp; Congestion Management</h3>
+          <p>
+            <strong>Policing:</strong> Enforces a strict rate limit (CIR/Bc/Be)
+            by immediately <strong>dropping or re-marking</strong> excess
+            packets (no buffering; causes TCP retransmissions).
+            <strong>Shaping:</strong> Buffers excess packets in a queue to
+            smooth outbound bursts to the contracted rate (adds delay/jitter
+            instead of drops). <strong>LLQ (Low Latency Queuing):</strong> Adds
+            a strict priority queue (for voice) to
+            <strong>CBWFQ</strong> (Class-Based Weighted Fair Queuing).
+            <strong>WRED:</strong> Weighted Random Early Detection (drops
+            lower-priority TCP packets before queues fill completely).
+          </p>
         </div>
 
-        <div class="glossary-cat">Layer 2 EtherChannel, Trunking &amp; Time Sync</div>
+        <div class="glossary-cat">
+          Layer 2 EtherChannel, Trunking &amp; Time Sync
+        </div>
         <div class="term-card">
-          <h3>EtherChannel (LACP vs. PAgP), DTP, NTP, PTP &amp; SSO</h3>
-          <p><strong>EtherChannel:</strong> Bundles 2–8 physical Ethernet links into one logical Port-Channel for
-            load-balanced bandwidth and sub-second link failover. <strong>LACP (Link Aggregation Control Protocol — IEEE
-              802.3ad / 802.1AX):</strong> Open-standard negotiation using <code>active</code> (initiates) and
-            <code>passive</code> (listens) modes. <strong>PAgP (Port Aggregation Protocol):</strong> Cisco-proprietary
-            negotiation using <code>desirable</code> (initiates) and <code>auto</code> (listens) modes. <strong>DTP
-              (Dynamic Trunking Protocol):</strong> Cisco protocol that negotiates <code>802.1Q</code> trunking
-            (<code>dynamic desirable</code> / <code>dynamic auto</code>). <strong>NTP vs. PTP:</strong> <strong>NTP
-              (Network Time Protocol — UDP 123)</strong> syncs device clocks to millisecond accuracy; <strong>PTP
-              (Precision Time Protocol — IEEE 1588)</strong> uses hardware timestamps for sub-microsecond accuracy.
-            <strong>SSO (Stateful Switchover):</strong> High-availability redundancy where a standby supervisor
-            maintains synced Layer 2/control-plane state for rapid failover.</p>
+          <h3>
+            EtherChannel &amp; Time Acronyms (LACP, PAgP, DTP, VTP, NTP, PTP,
+            NAT, PAT, SSO)
+          </h3>
+          <p>
+            <strong>LACP:</strong> Link Aggregation Control Protocol (IEEE
+            <code>802.3ad</code> / <code>802.1AX</code> — modes
+            <code>active</code> / <code>passive</code>).
+            <strong>PAgP:</strong> Port Aggregation Protocol (Cisco proprietary
+            — modes <code>desirable</code> / <code>auto</code>).
+            <strong>DTP / VTP:</strong> Dynamic Trunking Protocol / VLAN
+            Trunking Protocol. <strong>NTP / PTP:</strong> Network Time Protocol
+            (UDP <code>123</code>, millisecond accuracy) / Precision Time
+            Protocol (IEEE <code>1588</code>, sub-microsecond accuracy).
+            <strong>NAT / PAT:</strong> Network Address Translation / Port
+            Address Translation. <strong>SSO:</strong> Stateful Switchover
+            (supervisor redundancy).
+          </p>
         </div>
-      </div>
-
-
-      <div class="term-card">
-        <h3>IPv4 Multicast MAC Mapping (32-to-1 Overlap)</h3>
-        <p>
-          IPv4 multicast addresses (<code>224.0.0.0/4</code>) map to
-          Ethernet MAC prefix <code>01:00:5e:00:00:00</code> plus the
-          <strong>low-order 23 bits</strong> of the IPv4 address. Because 5
-          bits (28 multicast host bits &minus; 23 MAC bits) are dropped,
-          <strong>32 IPv4 multicast addresses share the exact same Layer 2 MAC
-            address</strong>.
-        </p>
-      </div>
-
-      <div class="glossary-cat">Quality of Service (QoS)</div>
-      <div class="term-card">
-        <h3>QoS Marking Acronyms (DSCP, PHB, EF, AF, CS, CoS, ToS, MQC)</h3>
-        <p>
-          <strong>QoS:</strong> Quality of Service.
-          <strong>DSCP:</strong> Differentiated Services Code Point (6-bit
-          IP header field, values 0–63). <strong>PHB:</strong> Per-Hop
-          Behavior. <strong>EF:</strong> Expedited Forwarding (DSCP
-          <code>46</code> — voice). <strong>AF:</strong> Assured Forwarding
-          (<code>AFxy</code> where <code>x</code> = class 1–4,
-          <code>y</code> = drop precedence 1–3). <strong>CS:</strong> Class
-          Selector (backward-compatible with legacy 3-bit IP Precedence).
-          <strong>CoS:</strong> Class of Service (3-bit IEEE
-          <code>802.1p</code> field inside an <code>802.1Q</code> VLAN tag).
-          <strong>ToS / MQC:</strong> Type of Service / Modular QoS CLI.
-        </p>
-      </div>
-      <div class="term-card">
-        <h3>Policing vs. Shaping &amp; Congestion Management</h3>
-        <p>
-          <strong>Policing:</strong> Enforces a strict rate limit
-          (CIR/Bc/Be) by immediately
-          <strong>dropping or re-marking</strong> excess packets (no
-          buffering; causes TCP retransmissions).
-          <strong>Shaping:</strong> Buffers excess packets in a queue to
-          smooth outbound bursts to the contracted rate (adds delay/jitter
-          instead of drops).
-          <strong>LLQ (Low Latency Queuing):</strong> Adds a strict priority
-          queue (for voice) to <strong>CBWFQ</strong> (Class-Based Weighted
-          Fair Queuing). <strong>WRED:</strong> Weighted Random Early
-          Detection (drops lower-priority TCP packets before queues fill
-          completely).
-        </p>
-      </div>
-
-      <div class="glossary-cat">
-        Layer 2 EtherChannel, Trunking &amp; Time Sync
-      </div>
-      <div class="term-card">
-        <h3>
-          EtherChannel &amp; Time Acronyms (LACP, PAgP, DTP, VTP, NTP, PTP,
-          NAT, PAT, SSO)
-        </h3>
-        <p>
-          <strong>LACP:</strong> Link Aggregation Control Protocol (IEEE
-          <code>802.3ad</code> / <code>802.1AX</code> — modes
-          <code>active</code> / <code>passive</code>).
-          <strong>PAgP:</strong> Port Aggregation Protocol (Cisco
-          proprietary — modes <code>desirable</code> / <code>auto</code>).
-          <strong>DTP / VTP:</strong> Dynamic Trunking Protocol / VLAN
-          Trunking Protocol. <strong>NTP / PTP:</strong> Network Time
-          Protocol (UDP <code>123</code>, millisecond accuracy) / Precision
-          Time Protocol (IEEE <code>1588</code>, sub-microsecond accuracy).
-          <strong>NAT / PAT:</strong> Network Address Translation / Port
-          Address Translation. <strong>SSO:</strong> Stateful Switchover
-          (supervisor redundancy).
-        </p>
-      </div>
-  </div>
-  </aside>
-  <!-- Right Column: Interactive Multicast, QoS & EtherChannel Simulators -->
-  <main class="visualizer-column">
-    <div class="net-widget">
-      <div class="mode-tabs">
-        <button type="button" class="mode-tab active" id="tabMcast">
-          IPv4 Multicast (PIM-SM &amp; RPF)
-        </button>
-        <button type="button" class="mode-tab" id="tabQos">
-          QoS DSCP Calculator &amp; Shaping
-        </button>
-        <button type="button" class="mode-tab" id="tabLag">
-          EtherChannel (LACP / PAgP)
-        </button>
-      </div>
-
-      <!-- TAB 1: IPv4 MULTICAST (PIM-SM & RPF) -->
-      <div id="panelMcast">
-        <div class="sim-header">
-          <div>
-            <h1>IPv4 Multicast PIM Sparse Mode &amp; RPF Simulator</h1>
-            <p class="sim-sub">
-              Inspect how IGMP joins, <code>(*,G)</code> Shared Trees,
-              <code>(S,G)</code> Shortest-Path Trees, and RPF checks
-              operate.
-            </p>
+      </aside>
+      <!-- Right Column: Interactive Multicast, QoS & EtherChannel Simulators -->
+      <main class="visualizer-column">
+        <div class="net-widget">
+          <div class="mode-tabs">
+            <button type="button" class="mode-tab active" id="tabMcast">
+              IPv4 Multicast (PIM-SM &amp; RPF)
+            </button>
+            <button type="button" class="mode-tab" id="tabQos">
+              QoS DSCP Calculator &amp; Shaping
+            </button>
+            <button type="button" class="mode-tab" id="tabLag">
+              EtherChannel (LACP / PAgP)
+            </button>
           </div>
-          <select id="mcastSelect" class="scenario-select">
-            <option value="igmp-join">
-              1. IGMPv2/v3 Receiver Join &amp; L2 MAC Mapping
-            </option>
-            <option value="pim-shared">
-              2. PIM Sparse Mode: (*,G) Shared Tree to RP
-            </option>
-            <option value="pim-spt">
-              3. PIM-SM: (S,G) Shortest-Path Tree (SPT) Switchover
-            </option>
-            <option value="rpf-fail">
-              4. RPF Check Failure (Asymmetric Routing Loop Guard)
-            </option>
-          </select>
-        </div>
 
-        <div class="metrics-bar" id="mcastMetrics"></div>
-        <div class="explain-box" id="mcastExplain"></div>
-        <div class="sub-label">
-          Cisco IOS-XE Multicast Verification / Config CLI:
-        </div>
-        <pre class="code-pre" id="mcastCli"></pre>
-      </div>
+          <!-- TAB 1: IPv4 MULTICAST (PIM-SM & RPF) -->
+          <div id="panelMcast">
+            <div class="sim-header">
+              <div>
+                <h1>IPv4 Multicast PIM Sparse Mode &amp; RPF Simulator</h1>
+                <p class="sim-sub">
+                  Inspect how IGMP joins, <code>(*,G)</code> Shared Trees,
+                  <code>(S,G)</code> Shortest-Path Trees, and RPF checks
+                  operate.
+                </p>
+              </div>
+              <select id="mcastSelect" class="scenario-select">
+                <option value="igmp-join">
+                  1. IGMPv2/v3 Receiver Join &amp; L2 MAC Mapping
+                </option>
+                <option value="pim-shared">
+                  2. PIM Sparse Mode: (*,G) Shared Tree to RP
+                </option>
+                <option value="pim-spt">
+                  3. PIM-SM: (S,G) Shortest-Path Tree (SPT) Switchover
+                </option>
+                <option value="rpf-fail">
+                  4. RPF Check Failure (Asymmetric Routing Loop Guard)
+                </option>
+              </select>
+            </div>
 
-      <!-- TAB 2: QoS DSCP CALCULATOR & POLICING VS. SHAPING -->
-      <div id="panelQos" class="hidden">
-        <div class="sim-header">
-          <div>
-            <h1>
-              QoS DSCP / CoS Bit Calculator &amp; Policing vs. Shaping
-            </h1>
-            <p class="sim-sub">
-              Select a PHB traffic class to inspect its 6-bit DSCP value,
-              binary bits, L2 CoS mapping, and MQC policy.
-            </p>
+            <div class="metrics-bar" id="mcastMetrics"></div>
+            <div class="explain-box" id="mcastExplain"></div>
+            <div class="sub-label">
+              Cisco IOS-XE Multicast Verification / Config CLI:
+            </div>
+            <pre class="code-pre" id="mcastCli"></pre>
           </div>
-          <select id="qosSelect" class="scenario-select">
-            <option value="ef">
-              EF (Expedited Forwarding — DSCP 46 / Voice Bearer)
-            </option>
-            <option value="af41">
-              AF41 (Assured Forwarding 41 — DSCP 34 / Interactive Video)
-            </option>
-            <option value="cs3">
-              CS3 (Class Selector 3 — DSCP 24 / Call Signaling)
-            </option>
-            <option value="af21">
-              AF21 (Assured Forwarding 21 — DSCP 18 / Critical Data)
-            </option>
-            <option value="be">
-              BE / CS0 (Best Effort — DSCP 0 / Default Traffic)
-            </option>
-          </select>
-        </div>
 
-        <div class="metrics-bar" id="qosMetrics"></div>
-        <div class="explain-box" id="qosExplain"></div>
-        <div class="sub-label">
-          Cisco IOS-XE MQC Policy-Map Example (LLQ / Shaping / Policing):
-        </div>
-        <pre class="code-pre" id="qosCli"></pre>
-      </div>
+          <!-- TAB 2: QoS DSCP CALCULATOR & POLICING VS. SHAPING -->
+          <div id="panelQos" class="hidden">
+            <div class="sim-header">
+              <div>
+                <h1>
+                  QoS DSCP / CoS Bit Calculator &amp; Policing vs. Shaping
+                </h1>
+                <p class="sim-sub">
+                  Select a PHB traffic class to inspect its 6-bit DSCP value,
+                  binary bits, L2 CoS mapping, and MQC policy.
+                </p>
+              </div>
+              <select id="qosSelect" class="scenario-select">
+                <option value="ef">
+                  EF (Expedited Forwarding — DSCP 46 / Voice Bearer)
+                </option>
+                <option value="af41">
+                  AF41 (Assured Forwarding 41 — DSCP 34 / Interactive Video)
+                </option>
+                <option value="cs3">
+                  CS3 (Class Selector 3 — DSCP 24 / Call Signaling)
+                </option>
+                <option value="af21">
+                  AF21 (Assured Forwarding 21 — DSCP 18 / Critical Data)
+                </option>
+                <option value="be">
+                  BE / CS0 (Best Effort — DSCP 0 / Default Traffic)
+                </option>
+              </select>
+            </div>
 
-      <!-- TAB 3: ETHERCHANNEL (LACP / PAgP) NEGOTIATION MATRIX -->
-      <div id="panelLag" class="hidden">
-        <div class="sim-header">
-          <div>
-            <h1>EtherChannel (LACP / PAgP) Bundle Negotiation Simulator</h1>
-            <p class="sim-sub">
-              Test whether Switch A and Switch B form an active Layer 2
-              Port-Channel (<code>SU</code>) or fail to bundle.
-            </p>
+            <div class="metrics-bar" id="qosMetrics"></div>
+            <div class="explain-box" id="qosExplain"></div>
+            <div class="sub-label">
+              Cisco IOS-XE MQC Policy-Map Example (LLQ / Shaping / Policing):
+            </div>
+            <pre class="code-pre" id="qosCli"></pre>
+          </div>
+
+          <!-- TAB 3: ETHERCHANNEL (LACP / PAgP) NEGOTIATION MATRIX -->
+          <div id="panelLag" class="hidden">
+            <div class="sim-header">
+              <div>
+                <h1>EtherChannel (LACP / PAgP) Bundle Negotiation Simulator</h1>
+                <p class="sim-sub">
+                  Test whether Switch A and Switch B form an active Layer 2
+                  Port-Channel (<code>SU</code>) or fail to bundle.
+                </p>
+              </div>
+            </div>
+
+            <div class="lag-controls">
+              <div>
+                <label for="lagSideA">Switch A Port Mode:</label>
+                <select id="lagSideA" class="scenario-select">
+                  <option value="active" selected>active (LACP)</option>
+                  <option value="passive">passive (LACP)</option>
+                  <option value="desirable">desirable (PAgP)</option>
+                  <option value="auto">auto (PAgP)</option>
+                  <option value="on">on (Static — No Protocol)</option>
+                </select>
+              </div>
+              <div>
+                <label for="lagSideB">Switch B Port Mode:</label>
+                <select id="lagSideB" class="scenario-select">
+                  <option value="active">active (LACP)</option>
+                  <option value="passive" selected>passive (LACP)</option>
+                  <option value="desirable">desirable (PAgP)</option>
+                  <option value="auto">auto (PAgP)</option>
+                  <option value="on">on (Static — No Protocol)</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="verdict-banner" id="lagVerdict"></div>
+            <div class="explain-box" id="lagExplain"></div>
           </div>
         </div>
-
-        <div class="lag-controls">
-          <div>
-            <label for="lagSideA">Switch A Port Mode:</label>
-            <select id="lagSideA" class="scenario-select">
-              <option value="active" selected>active (LACP)</option>
-              <option value="passive">passive (LACP)</option>
-              <option value="desirable">desirable (PAgP)</option>
-              <option value="auto">auto (PAgP)</option>
-              <option value="on">on (Static — No Protocol)</option>
-            </select>
-          </div>
-          <div>
-            <label for="lagSideB">Switch B Port Mode:</label>
-            <select id="lagSideB" class="scenario-select">
-              <option value="active">active (LACP)</option>
-              <option value="passive" selected>passive (LACP)</option>
-              <option value="desirable">desirable (PAgP)</option>
-              <option value="auto">auto (PAgP)</option>
-              <option value="on">on (Static — No Protocol)</option>
-            </select>
-          </div>
-        </div>
-
-        <div class="verdict-banner" id="lagVerdict"></div>
-        <div class="explain-box" id="lagExplain"></div>
-      </div>
+      </main>
     </div>
-  </main>
-  </div>
 
-  <script src="script.js"></script>
-</body>
-
+    <script src="script.js"></script>
+  </body>
 </html>
